@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hành Trình Kim Cương - Full Presentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #030712;
+            --accent-cyan: #00F0FF;
+            --accent-gold: #FFD700;
+            --deep-navy: #0F172A;
+            --text-dark: #0F172A;
+            --text-light: #F8FAFC;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body, html { width: 100vw; height: 100vh; overflow: hidden; background-color: var(--bg-dark); }
+        .slider-container { width: 100vw; height: 100vh; position: relative; }
+
+        .fixed-logo-container {
+            position: absolute; top: 25px; right: 45px; z-index: 100;
+            width: 190px; height: 58px; border-radius: 16px; padding: 6px 16px;
+            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(16px);
+            transition: all 0.5s ease;
+        }
+        
+        .fixed-logo-container.dark-theme {
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .fixed-logo-container.light-theme {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(203, 213, 225, 0.6);
+            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+        }
+
+        .fixed-logo-container img { width: 100%; height: 100%; object-fit: contain; }
+
+        .slide {
+            width: 100%; height: 100%; position: absolute; top: 0; left: 0; opacity: 0;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; flex-direction: column; justify-content: flex-start;
+            z-index: 1; padding: 35px 65px; transform: scale(0.97); pointer-events: none;
+            overflow: hidden;
+        }
+        .slide.active { opacity: 1; transform: scale(1); z-index: 2; pointer-events: auto; }
+
+        .dark-slide { 
+            background: radial-gradient(circle at 50% 30%, #1E293B 0%, #0F172A 55%, #030712 100%); 
+            color: var(--text-light); 
+        }
+        .light-slide { 
+            background: radial-gradient(circle at 20% 20%, #FFFFFF 0%, #E2E8F0 60%, #CBD5E1 100%); 
+            color: var(--text-dark); 
+        }
+
+        .glow-orb-center {
+            position: absolute; width: 650px; height: 650px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.18) 0%, transparent 70%);
+            top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; filter: blur(50px);
+        }
+
+        .slide-header { width: 100%; margin-bottom: 22px; flex-shrink: 0; position: relative; z-index: 3; }
+        .stage-tracker { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-cyan); }
+        .stage-step { padding: 5px 14px; border-radius: 20px; background: rgba(0, 240, 255, 0.15); border: 1px solid rgba(0, 240, 255, 0.4); color: var(--accent-cyan); }
+        .slide-title { font-size: 32px; font-weight: 800; border-bottom: 2px solid rgba(0, 240, 255, 0.3); padding-bottom: 10px; color: #FFFFFF; }
+
+        .light-slide .stage-tracker { color: #0284C7; font-weight: 800; }
+        .light-slide .stage-step { background: rgba(2, 132, 199, 0.12); border: 1.5px solid #0284C7; color: #0369A1; font-weight: 800; }
+        .light-slide .slide-title { border-bottom: 2px solid #CBD5E1; color: #0F172A; }
+
+        .cover-centered-layout {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; width: 100%; height: 100%; max-width: 1050px; margin: 0 auto;
+            position: relative; z-index: 3;
+        }
+
+        .cover-badge {
+            display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; border-radius: 30px;
+            background: rgba(0, 240, 255, 0.12); border: 1px solid rgba(0, 240, 255, 0.4);
+            color: var(--accent-cyan); font-size: 13px; font-weight: 800; letter-spacing: 3px; margin-bottom: 25px;
+        }
+
+        .cover-main-title {
+            font-size: 56px; font-weight: 900; line-height: 1.25; margin-bottom: 16px;
+            background: linear-gradient(135deg, #FFFFFF 0%, #E0F2FE 40%, #00F0FF 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .cover-sub-title { font-size: 28px; font-weight: 800; color: #FCD34D; font-style: italic; margin-bottom: 35px; }
+
+        .cover-teacher-badge {
+            display: inline-flex; align-items: center; gap: 10px; padding: 12px 28px; border-radius: 14px;
+            background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(0, 240, 255, 0.3);
+            color: #F8FAFC; font-size: 16px; font-weight: 700; backdrop-filter: blur(10px);
+        }
+
+        .agenda-row-layout {
+            display: flex; flex-direction: column; gap: 16px;
+            max-width: 1350px; width: 100%; margin: 10px auto 0;
+            height: calc(100vh - 180px); justify-content: center;
+        }
+
+        .agenda-minimal-item {
+            background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(0, 240, 255, 0.25);
+            border-radius: 18px; padding: 20px 35px; backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+        .agenda-minimal-item:hover { border-color: var(--accent-cyan); transform: translateX(10px); }
+
+        .agenda-left-part { display: flex; align-items: center; gap: 25px; }
+        .agenda-index { font-size: 22px; font-weight: 900; color: var(--accent-cyan); }
+        .agenda-title-deep { font-size: 18px; font-weight: 700; color: #FFFFFF; }
+        .agenda-icon { color: var(--accent-cyan); font-size: 22px; }
+
+        .profile-swot-grid { 
+            display: grid; grid-template-columns: 380px 1fr; gap: 25px; 
+            width: 100%; max-width: 1350px; margin: 0 auto; height: calc(100vh - 180px);
+        }
+        
+        .profile-box {
+            background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(0, 240, 255, 0.4);
+            border-radius: 20px; padding: 28px 22px; backdrop-filter: blur(12px);
+            display: flex; flex-direction: column; align-items: center; text-align: center; 
+            justify-content: center; gap: 18px;
+        }
+        
+        .profile-avatar-wrap {
+            width: 190px; height: 190px; border-radius: 50%;
+            border: 4px solid var(--accent-cyan); padding: 4px;
+            box-shadow: 0 0 35px rgba(0, 240, 255, 0.45); overflow: hidden; flex-shrink: 0;
+        }
+        .profile-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+        .profile-box h3 { font-size: 25px; font-weight: 800; color: #FFFFFF; }
+        .profile-tag { font-size: 14px; color: var(--accent-cyan); font-weight: 700; margin-top: 2px; }
+        .profile-details-list { width: 100%; text-align: left; display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+        .profile-info-item { font-size: 14.5px; font-weight: 600; color: #F8FAFC; display: flex; align-items: center; gap: 12px; }
+        .profile-info-item i { color: var(--accent-cyan); font-size: 18px; width: 20px; text-align: center; }
+
+        .swot-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: 100%; }
+        .swot-card {
+            background: rgba(15, 23, 42, 0.85); border-radius: 18px; padding: 24px 26px;
+            border-top: 5px solid #10B981; backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; justify-content: flex-start;
+        }
+        .swot-card h3 { font-size: 18px; font-weight: 800; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+        
+        .bullet-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+        .bullet-list li { position: relative; padding-left: 22px; font-size: 15px; line-height: 1.6; font-weight: 600; color: #FFFFFF !important; }
+        .bullet-list li::before { content: "✦"; position: absolute; left: 0; font-size: 12px; color: var(--accent-cyan); }
+
+        .single-transform-card {
+            display: grid; grid-template-columns: 1fr 1.1fr; gap: 30px;
+            max-width: 1350px; width: 100%; margin: 0 auto; height: calc(100vh - 170px);
+            align-items: center; background: rgba(15, 23, 42, 0.75); border-radius: 24px;
+            padding: 35px 40px; backdrop-filter: blur(14px);
+        }
+
+        .single-card-left h3 { font-size: 24px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+
+        .interactive-item {
+            padding: 14px 18px; border-radius: 14px; transition: all 0.3s ease;
+            border-left: 4px solid transparent; margin-bottom: 10px; cursor: pointer;
+        }
+        .interactive-item.highlight-item {
+            background: rgba(0, 240, 255, 0.12); border-left-color: var(--accent-cyan);
+            transform: translateX(8px);
+        }
+
+        .single-card-right { position: relative; height: 100%; min-height: 320px; border-radius: 16px; overflow: hidden; }
+
+        .mosaic-3photos-grid {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: grid; grid-template-columns: 1.3fr 1fr; grid-template-rows: 1fr 1fr;
+            gap: 14px; opacity: 0; pointer-events: none; transform: scale(0.96);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .mosaic-3photos-grid.active-photos { opacity: 1; pointer-events: auto; transform: scale(1); }
+
+        .photo-custom-frame {
+            border: 2px dashed rgba(0, 240, 255, 0.4); border-radius: 16px;
+            background: rgba(15, 23, 42, 0.5); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; color: rgba(248, 250, 252, 0.7);
+            transition: all 0.3s ease; position: relative; overflow: hidden;
+        }
+        .photo-custom-frame:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0, 240, 255, 0.08); }
+        .photo-custom-frame img { width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0; }
+        .photo-custom-frame:nth-child(1) { grid-row: span 2; }
+
+        .smart-single-layout {
+            display: grid; grid-template-columns: 1fr 1.1fr; gap: 30px;
+            max-width: 1350px; width: 100%; margin: 0 auto; height: calc(100vh - 170px); align-items: center;
+        }
+
+        .smart-card-full {
+            background: #FFFFFF; border-radius: 20px; padding: 28px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); border-top: 6px solid #0284C7;
+            display: flex; flex-direction: column; gap: 14px; height: 100%; justify-content: space-around;
+        }
+
+        .col-field-block { background: #F8FAFC; border-radius: 12px; padding: 14px 18px; border-left: 4px solid #0284C7; }
+        .col-field-label { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #0284C7; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+        .col-field-content { font-size: 14.5px; font-weight: 600; color: #334155; line-height: 1.6; }
+
+        .random-photo-mosaic { display: grid; grid-template-columns: 1.3fr 1fr; grid-template-rows: 1fr 1fr; gap: 14px; height: 100%; width: 100%; }
+        .photo-frame {
+            background: #FFFFFF; border-radius: 16px; border: 2px dashed #94A3B8;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #64748B; transition: all 0.3s ease; position: relative; overflow: hidden;
+        }
+        .photo-frame:hover { border-color: #0284C7; color: #0284C7; background: #F0F9FF; }
+        .photo-frame img { width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0; }
+        .photo-frame:nth-child(1) { grid-row: span 2; } 
+
+        .merged-container { display: flex; flex-direction: column; gap: 20px; max-width: 1350px; width: 100%; margin: 10px auto 0; height: calc(100vh - 180px); }
+        .smart-cards-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .card-box { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 22px 24px; border-top: 5px solid var(--deep-navy); color: var(--text-dark); box-shadow: 0 10px 25px rgba(0,0,0,0.06); }
+
+        .table-wrap { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.08); flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+        .custom-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .custom-table th { background: var(--deep-navy); color: #FFF; padding: 14px 20px; font-size: 14.5px; font-weight: 700; border-radius: 6px; }
+        .custom-table td { padding: 14px 20px; font-size: 14px; border-bottom: 1px solid #E2E8F0; font-weight: 600; color: #334155; line-height: 1.5; }
+        .highlight-row { background: rgba(2, 132, 199, 0.12) !important; font-weight: 700 !important; }
+        .highlight-row td { color: #0369A1 !important; }
+
+        .motivation-grid-2col {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 25px;
+            max-width: 1350px; width: 100%; margin: 10px auto 0; height: calc(100vh - 180px);
+        }
+
+        .motivation-card-with-photo {
+            background: #FFFFFF; border-radius: 20px; padding: 26px;
+            border-top: 6px solid #0284C7; display: flex; flex-direction: column;
+            gap: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+        }
+
+        .motivation-card-with-photo h3 { font-size: 20px; font-weight: 800; color: #0284C7; display: flex; align-items: center; gap: 10px; }
+
+        .motivation-photo-box {
+            flex-grow: 1; border: 2px dashed #CBD5E1; border-radius: 14px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #64748B; background: #F8FAFC; transition: all 0.3s ease; position: relative; overflow: hidden;
+        }
+        .motivation-photo-box:hover { border-color: #0284C7; background: #F0F9FF; color: #0284C7; }
+        .motivation-photo-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+
+        .thankyou-centered-layout {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; width: 100%; height: 100%; max-width: 950px; margin: 0 auto;
+        }
+
+        .thankyou-card {
+            background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(0, 240, 255, 0.4);
+            border-radius: 24px; padding: 60px 80px; backdrop-filter: blur(16px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center; gap: 20px;
+        }
+
+        .step-item { opacity: 0; transform: translateY(18px); transition: all 0.4s ease; }
+        .step-item.revealed { opacity: 1; transform: translateY(0); }
+
+        .nav-btn-wrap { position: absolute; bottom: 25px; right: 80px; display: flex; gap: 10px; z-index: 10; }
+        .nav-btn { width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1px solid #CBD5E1; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.12); color: var(--deep-navy); transition: all 0.3s; }
+        .nav-btn:hover { background: var(--accent-cyan); border-color: var(--accent-cyan); transform: scale(1.08); }
+    </style>
+</head>
+<body>
+
+    <div class="fixed-logo-container dark-theme" id="fixed-logo">
+        <img src="images/logo-fpt.png" alt="FPT Poly Logo">
+    </div>
+
+    <div class="slider-container">
+
+        <!-- SLIDE 1 -->
+        <div class="slide dark-slide active" id="slide-1">
+            <div class="glow-orb-center"></div>
+            <div class="cover-centered-layout step-item">
+                <div class="cover-badge"><i class="fas fa-gem"></i> BÀI THI KẾT THÚC MÔN</div>
+                <h1 class="cover-main-title">HÀNH TRÌNH KHAI THÁC MỎ KIM CƯƠNG</h1>
+                <div class="cover-sub-title">"Từ Than Cốc Đến Ánh Sáng"</div>
+                <div class="cover-teacher-badge">
+                    <i class="fas fa-chalkboard-teacher" style="color:#00F0FF;"></i>
+                    <span>Giảng viên hướng dẫn: <strong style="color:#00F0FF;">Cô Nguyễn Khánh Ly</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2 -->
+        <div class="slide dark-slide" id="slide-2">
+            <div class="slide-header">
+                <div class="stage-tracker"><span class="stage-step">TỔNG QUAN</span> LỘ TRÌNH TRÌNH BÀY NỘI DUNG</div>
+                <h2 class="slide-title">Cấu Trúc Bài Trình Bày</h2>
+            </div>
+            
+            <div class="agenda-row-layout">
+                <div class="agenda-minimal-item step-item">
+                    <div class="agenda-left-part">
+                        <span class="agenda-index">01</span>
+                        <span class="agenda-title-deep">Định Vị Cá Nhân & Ma Trận Thách Thức (SWOT)</span>
+                    </div>
+                    <i class="fas fa-compass agenda-icon"></i>
+                </div>
+                <div class="agenda-minimal-item step-item">
+                    <div class="agenda-left-part">
+                        <span class="agenda-index">02</span>
+                        <span class="agenda-title-deep">Chuyển Biến Tư Duy: Từ Thụ Động, Trì Trệ Đến Chủ Động, Bứt Phá</span>
+                    </div>
+                    <i class="fas fa-sync-alt agenda-icon"></i>
+                </div>
+                <div class="agenda-minimal-item step-item">
+                    <div class="agenda-left-part">
+                        <span class="agenda-index">03</span>
+                        <span class="agenda-title-deep">Minh Chứng Kết Quả & Bảng Điểm Tiến Độ Học Tập</span>
+                    </div>
+                    <i class="fas fa-chart-line agenda-icon"></i>
+                </div>
+                <div class="agenda-minimal-item step-item">
+                    <div class="agenda-left-part">
+                        <span class="agenda-index">04</span>
+                        <span class="agenda-title-deep">Tầm Nhìn Chiến Lược 5 Năm & Bản Thiết Kế Hành Động 3W</span>
+                    </div>
+                    <i class="fas fa-crosshairs agenda-icon"></i>
+                </div>
+                <div class="agenda-minimal-item step-item">
+                    <div class="agenda-left-part">
+                        <span class="agenda-index">05</span>
+                        <span class="agenda-title-deep">Kỷ Luật 24H Hằng Ngày & Nguồn Động Lực Phát Triển</span>
+                    </div>
+                    <i class="fas fa-fire agenda-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3 -->
+        <div class="slide dark-slide" id="slide-3">
+            <div class="slide-header">
+                <div class="stage-tracker"><span class="stage-step">BƯỚC 1: ĐỊNH VỊ</span> ĐÁNH GIÁ CHẤT LƯỢNG MỎ QUẶNG BAN ĐẦU</div>
+                <h2 class="slide-title">1. Hồ Sơ Cá Nhân & Ma Trận SWOT</h2>
+            </div>
+            
+            <div class="profile-swot-grid">
+                <div class="profile-box step-item">
+                    <div class="profile-avatar-wrap">
+                        <img src="images/slide3_1.png" onerror="this.src='https://ui-avatars.com/api/?name=Huynh+Dac+Thanh&background=0F172A&color=00F0FF&size=190'" alt="Huỳnh Đắc Thành">
+                    </div>
+                    <div>
+                        <h3>Huỳnh Đắc Thành</h3>
+                        <div class="profile-tag">Sinh viên FPT Polytechnic</div>
+                    </div>
+                    <div class="profile-details-list">
+                        <div class="profile-info-item"><i class="fas fa-graduation-cap"></i> Logistics & Chuỗi cung ứng</div>
+                        <div class="profile-info-item"><i class="fas fa-bullseye"></i> Mục tiêu: Trưởng Bưu Cục</div>
+                        <div class="profile-info-item"><i class="fas fa-university"></i> Môn: Kỹ năng học tập</div>
+                    </div>
+                </div>
+
+                <div class="swot-2x2">
+                    <div class="swot-card step-item" style="border-top-color:#10B981;">
+                        <h3 style="color:#34D399;"><i class="fas fa-shield-alt"></i> Điểm Mạnh (Strengths)</h3>
+                        <ul class="bullet-list">
+                            <li><strong style="color:#00F0FF;">Tư duy logic tốt</strong>, tiếp thu nhanh chuyên môn.</li>
+                            <li><strong style="color:#00F0FF;">Tinh thần trách nhiệm cao</strong>, chủ động xử lý sự cố.</li>
+                            <li>Khả năng thích nghi nhanh với công nghệ & quy trình mới.</li>
+                        </ul>
+                    </div>
+                    <div class="swot-card step-item" style="border-top-color:#EF4444;">
+                        <h3 style="color:#FCA5A5;"><i class="fas fa-exclamation-triangle"></i> Điểm Yếu (Weaknesses)</h3>
+                        <ul class="bullet-list">
+                            <li>Quản lý thời gian chưa tối ưu, dễ xao nhãng.</li>
+                            <li>Thiếu kiên nhẫn với quy trình hành chính dài hạn.</li>
+                            <li>Cần nâng cao Tiếng Anh chuyên ngành Logistics.</li>
+                        </ul>
+                    </div>
+                    <div class="swot-card step-item" style="border-top-color:#3B82F6;">
+                        <h3 style="color:#60A5FA;"><i class="fas fa-door-open"></i> Cơ Hội (Opportunities)</h3>
+                        <ul class="bullet-list">
+                            <li>Môi trường thực hành cao tại FPT Polytechnic.</li>
+                            <li>Ngành Chuyển phát nhanh bùng nổ mạnh mẽ.</li>
+                            <li>Mạng lưới kết nối doanh nghiệp từ các kỳ thực tập.</li>
+                        </ul>
+                    </div>
+                    <div class="swot-card step-item" style="border-top-color:#F59E0B;">
+                        <h3 style="color:#FBBF24;"><i class="fas fa-bolt"></i> Thách Thức (Threats)</h3>
+                        <ul class="bullet-list">
+                            <li>Thị trường Chuyển phát cạnh tranh khốc liệt.</li>
+                            <li>Áp lực tối ưu chi phí & tốc độ chặng cuối.</li>
+                            <li>Yêu cầu chuyển đổi số ngày càng khắt khe.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4 -->
+        <div class="slide dark-slide" id="slide-4">
+            <div class="slide-header">
+                <div class="stage-tracker"><span class="stage-step">BƯỚC 2: ĐIỂM XUẤT PHÁT</span> CHUYỂN BIẾN TƯ DUY (PHẦN 1)</div>
+                <h2 class="slide-title">2. Tư Duy Quá Khứ: Thụ Động & Trì Trệ</h2>
+            </div>
+
+            <div class="single-transform-card step-item" style="border-top: 6px solid #EF4444;">
+                <div class="single-card-left">
+                    <h3 style="color:#FCA5A5;"><i class="fas fa-hourglass-start"></i> Trạng Thái Than Thô (Trước Môn Học)</h3>
+                    <ul class="bullet-list" style="gap: 16px;">
+                        <li><strong style="color:#FCA5A5;">1. Thiếu Kỷ Luật Sinh Hoạt:</strong> Thói quen sinh hoạt tự do, hay thức khuya, quản lý thời gian kém dẫn đến hiệu suất hằng ngày không cao.</li>
+                        <li><strong style="color:#FCA5A5;">2. Trì Trệ Trong Học Tập:</strong> Thiếu chủ động tích lũy tri thức, tư duy ngắn hạn và thường đợi sát thời hạn mới bắt đầu làm bài.</li>
+                        <li><strong style="color:#FCA5A5;">3. Ngại Rời Vùng An Toàn:</strong> E ngại va chạm, thiếu phương hướng rõ ràng và hay tự giới hạn khả năng phát triển của bản thân.</li>
+                    </ul>
+                </div>
+
+                <div class="single-card-right">
+                    <div class="mosaic-3photos-grid active-photos">
+                        <div class="photo-custom-frame"><img src="images/slide4_1.png" alt="Ảnh 1"></div>
+                        <div class="photo-custom-frame"><img src="images/slide4_2.png" alt="Ảnh 2"></div>
+                        <div class="photo-custom-frame"><img src="images/slide4_3.png" alt="Ảnh 3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5 -->
+        <div class="slide dark-slide" id="slide-5">
+            <div class="slide-header">
+                <div class="stage-tracker"><span class="stage-step">BƯỚC 2: SỰ SANG TRANG</span> CHUYỂN BIẾN TƯ DUY (PHẦN 2)</div>
+                <h2 class="slide-title">3. Tư Duy Hiện Tại: Chủ Động & Bứt Phá</h2>
+            </div>
+
+            <div class="single-transform-card step-item" style="border-top: 6px solid #10B981;">
+                <div class="single-card-left">
+                    <h3 style="color:#6EE7B7;"><i class="fas fa-gem"></i> Kết Quả Lột Xác (Sau Môn Học)</h3>
+                    <ul class="bullet-list" style="gap: 10px;">
+                        <li class="interactive-item highlight-item" id="text-after-1" onclick="syncAfterPhotos(1)">
+                            <strong style="color:#00F0FF;">1. Sống Kỷ Luật Hằng Ngày:</strong> Rèn luyện thể chất đều đặn mỗi sáng, chủ động lập thời gian biểu và nghiêm túc tuân thủ.
+                        </li>
+                        <li class="interactive-item" id="text-after-2" onclick="syncAfterPhotos(2)">
+                            <strong style="color:#00F0FF;">2. Tích Lũy Tri Thức:</strong> Chủ động đọc sách, học hỏi công nghệ mới và luôn hoàn thành công việc trước thời hạn.
+                        </li>
+                        <li class="interactive-item" id="text-after-3" onclick="syncAfterPhotos(3)">
+                            <strong style="color:#00F0FF;">3. Mở Rộng Góc Nhìn:</strong> Tự tin chia sẻ quan điểm, sẵn sàng nhận thử thách mới và định hình lộ trình phát triển rõ ràng.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="single-card-right">
+                    <div class="mosaic-3photos-grid active-photos" id="photos-after-1">
+                        <div class="photo-custom-frame"><img src="images/slide5_1_1.png" alt="Ảnh 1 lớn"></div>
+                        <div class="photo-custom-frame"><img src="images/slide5_1_2.png" alt="Ảnh 1 nhỏ"></div>
+                        <div class="photo-custom-frame"><img src="images/slide5_1_3.png" alt="Ảnh 1 nhỏ"></div>
+                    </div>
+
+                    <div class="mosaic-3photos-grid" id="photos-after-2">
+                        <div class="photo-custom-frame"><img src="images/slide5_2_1.png" alt="Ảnh 2 lớn"></div>
+                        <div class="photo-custom-frame"><img src="images/slide5_2_2.png" alt="Ảnh 2 nhỏ"></div>
+                        <div class="photo-custom-frame"><img src="images/slide5_2_3.png" alt="Ảnh 2 nhỏ"></div>
+                    </div>
+
+                    <div class="mosaic-3photos-grid" id="photos-after-3">
+                        <div class="photo-custom-frame"><img src="images/slide5_3_1.png" alt="Ảnh 3 lớn"></div>
+                        <div class="photo-custom-frame"><img src="images/slide5_3_2.png" alt="Ảnh 3 nhỏ"></div>
+                        <div class="photo-custom-frame"><img src="images/slide5_3_3.png" alt="Ảnh 3 nhỏ"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 6 -->
+        <div class="slide light-slide" id="slide-6">
+            <div class="slide-header">
+                <div class="stage-tracker"><span class="stage-step">MINH CHỨNG THỰC TẾ</span> BÁO CÁO KẾT QUẢ ĐIỂM SỐ MÔN HỌC</div>
+                <h2 class="slide-title">4. Bảng Điểm Tiến Độ Học Tập</h2>
+            </div>
+            
+            <div class="merged-container">
+                <div class="smart-cards-row">
+                    <div class="card-box step-item" style="border-top-color: #0284C7; text-align: center; padding: 24px;">
+                        <div style="font-size: 13px; font-weight: 800; color: #64748B;">ĐẦU ĐIỂM TỐI ĐA (10.0)</div>
+                        <div style="font-size: 42px; font-weight: 900; color: #0284C7; margin: 4px 0;">3 / 5</div>
+                        <div style="font-size: 13px; font-weight: 700; color: #0284C7;">✦ Chiếm 60% tổng số đầu điểm</div>
+                    </div>
+
+                    <div class="card-box step-item" style="border-top-color: #F59E0B; text-align: center; padding: 24px;">
+                        <div style="font-size: 13px; font-weight: 800; color: #64748B;">TỔNG SỐ ĐẦU ĐIỂM</div>
+                        <div style="font-size: 42px; font-weight: 900; color: #D97706; margin: 4px 0;">05</div>
+                        <div style="font-size: 13px; font-weight: 700; color: #F59E0B;">✦ Hoàn thành 100% cột điểm</div>
+                    </div>
+
+                    <div class="card-box step-item" style="border-top-color: #10B981; text-align: center; padding: 24px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                        <div style="font-size: 13px; font-weight: 800; color: #64748B;">ĐIỂM TRUNG BÌNH QUÁ TRÌNH</div>
+                        <div style="font-size: 48px; font-weight: 900; color: #059669; margin: 4px 0;">9.5</div>
+                    </div>
+                </div>
+
+                <div class="table-wrap step-item" style="height: 100%;">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Thành Phần Đánh Giá / Bài Kiểm Tra</th>
+                                <th>Nội Dung Thực Hiện</th>
+                                <th style="text-align: center; width: 180px;">Điểm Số</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="highlight-row">
+                                <td><strong>Test 1 (Thuyết trình)</strong></td>
+                                <td>Thuyết trình cá nhân & Tự tin trình trình bày quan điểm trước lớp.</td>
+                                <td style="text-align: center;"><strong style="color:#0369A1; font-size: 18px;">10.0</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Test 2 (Rèn tâm)</strong></td>
+                                <td>Đánh giá nhận thức, giữ vững tinh thần kỷ luật & Thái độ học tập.</td>
+                                <td style="text-align: center;"><strong style="color:#059669; font-size: 18px;">10.0</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Thực hành cá nhân (Rèn thân)</strong></td>
+                                <td>Duy trì thói quen tập thể thao, kỷ luật giờ giấc sinh hoạt hằng ngày.</td>
+                                <td style="text-align: center;"><strong style="color:#059669; font-size: 18px;">10.0</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Workshop 1 (Rèn trí)</strong></td>
+                                <td>Đọc sách phát triển tư duy, đúc kết bài học & ứng dụng vào thực tế.</td>
+                                <td style="text-align: center;"><strong style="color:#D97706; font-size: 18px;">8.0</strong></td>
+                            </tr>
+                            <tr class="highlight-row">
+                                <td><strong>Workshop 2 (Thu hoạch)</strong></td>
+                                <td>Bài thu hoạch sau chuyến đi thực tế.</td>
+                                <td style="text-align: center;"><strong style="color:#0369A1; font-size: 18px;">9.25</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 7 -->
+        <div class="slide light-slide" id="slide-7">
+            <div class="slide-header">
+                <div class="stage-tracker"><span class="stage-step">BƯỚC 3 & 4: THỰC THI</span> MỤC TIÊU SMART & LỘ TRÌNH 3W (MỤC 01)</div>
+                <h2 class="slide-title">5. Tầm Nhìn Chiến Lược 5 Năm — Học Tập</h2>
+            </div>
+
+            <div class="smart-single-layout">
+                <div class="smart-card-full step-item" style="border-top-color: #0284C7;">
+                    <div class="col-header-box" style="border-bottom:2px solid #E2E8F0; padding-bottom:8px;">
+                        <h3 style="color: #0284C7; font-size: 22px;"><i class="fas fa-graduation-cap"></i> 01. HỌC TẬP</h3>
+                    </div>
+
+                    <div class="col-field-block" style="border-left-color: #0284C7;">
+                        <div class="col-field-label"><i class="fas fa-bullseye"></i> ĐÍCH ĐẾN (MỤC TIÊU SMART):</div>
+                        <div class="col-field-content">
+                            Đạt bằng <strong>Giỏi</strong> ngành Logistics tại FPT Poly (<strong>GPA ≥ 3.2</strong>) và giao tiếp tốt Tiếng Anh chuyên ngành đúng hạn vào <strong>tháng 08/2028</strong>.
+                        </div>
+                    </div>
+
+                    <div class="col-field-block" style="border-left-color: #0284C7;">
+                        <div class="col-field-label"><i class="fas fa-tasks"></i> WHAT (Hành Động Cần Làm):</div>
+                        <div class="col-field-content">
+                            ✦ Hoàn thành bài tập (Assignment & Lab) đúng hạn.<br>
+                            ✦ Tự học 30 phút Tiếng Anh công việc mỗi tối.<br>
+                            ✦ Tham gia 100% các dự án nhóm trên lớp.
+                        </div>
+                    </div>
+
+                    <div class="col-field-block" style="border-left-color: #0284C7;">
+                        <div class="col-field-label"><i class="fas fa-clock"></i> WHEN (Thời Gian):</div>
+                        <div class="col-field-content">
+                            <strong>19:00 - 21:00</strong> hằng ngày (Lộ trình từ nay đến tháng 08/2028).
+                        </div>
+                    </div>
+
+                    <div class="col-field-block" style="border-left-color: #0284C7;">
+                        <div class="col-field-label"><i class="fas fa-map-marker-alt"></i> WHERE (Địa Điểm):</div>
+                        <div class="col-field-content">
+                            Trường FPT Polytechnic, Thư viện số & Góc học tập cá nhân.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="random-photo-mosaic step-item">
+                    <div class="photo-frame"><img src="images/slide7_1.png" alt="Ảnh 7-1"></div>
+                    <div class="photo-frame"><img src="images/slide7_2.png" alt="Ảnh 7-2"></div>
+                    <div class="photo-frame"><img src="images/slide7_3.png" alt="Ảnh 7-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 8 -->
+        <div class="slide light-slide" id="slide-8">
+            <div class="slide-header">
+                <div class="stage-tracker"><span class="stage-step">BƯỚC 3 & 4: THỰC THI</span> MỤC TIÊU SMART & LỘ TRÌNH 3W (MỤC 02)</div>
+                <h2 class="slide-title">5. Tầm Nhìn Chiến Lược 5 Năm — Sự Nghiệp</h2>
+            </div>
+
+            <div class="smart-single-layout">
+                <div class="smart-card-full step-item" style="border-top-color: #10B981;">
+                    <div class="col-header-box" style="border-bottom:2px solid #E2E8F0; padding-bottom:8px;">
+                        <h3 style="color: #059669; font-size: 22px;"><i class="fas fa-briefcase"></i> 02. SỰ NGHIỆP</h3>
+                    </div>
+
+                    <div class="col-field-block" style="border-left-color: #10B981;">
+                        <div class="col-field-label" style="color: #059669;"><i class="fas fa-bullseye"></i> ĐÍCH ĐẾN (MỤC TIÊU SMART):</div>
+                        <div class="col-field-content">
+                            Trở thành <strong>Trưởng Bưu Cục</strong> (Station Manager) với thu nhập <strong>15-20 triệu/tháng</strong> và tự chủ tài chính cá nhân trước <strong>năm 2030</strong>.
+                        </div>
+                    </div>
+
+                    <div class="col-field-block" style="border-left-color: #10B981;">
+                        <div class="col-field-label" style="color: #059669;"><i class="fas fa-tasks"></i> WHAT (Hành Động Cần Làm):</div>
+                        <div class="col-field-content">
+                            ✦ Xin thực tập vị trí Điều phối viên Logistics.<br>
+                            ✦ Hỗ trợ quản lý bãi xe của gia đình để lấy kinh nghiệm.<br>
+                            ✦ Học thành thạo phần mềm quản lý kho vận (WMS).
+                        </div>
+                    </div>
+
+                    <div class="col-field-block" style="border-left-color: #10B981;">
+                        <div class="col-field-label" style="color: #059669;"><i class="fas fa-clock"></i> WHEN (Thời Gian):</div>
+                        <div class="col-field-content">
+                            <strong>2026 - 2028:</strong> Cọ xát thực địa.<br>
+                            <strong>2029 - 2030:</strong> Tiếp quản điều hành & mở rộng.
+                        </div>
+                    </div>
+
+                    <div class="col-field-block" style="border-left-color: #10B981;">
+                        <div class="col-field-label" style="color: #059669;"><i class="fas fa-map-marker-alt"></i> WHERE (Địa Điểm):</div>
+                        <div class="col-field-content">
+                            Bãi xe gia đình & Các doanh nghiệp đối tác Logistics (GHN, GHTK, Viettel Post).
+                        </div>
+                    </div>
+                </div>
+
+                <div class="random-photo-mosaic step-item">
+                    <div class="photo-frame"><img src="images/slide8_1.png" alt="Ảnh 8-1"></div>
+                    <div class="photo-frame"><img src="images/slide8_2.png" alt="Ảnh 8-2"></div>
+                    <div class="photo-frame"><img src="images/slide8_3.png" alt="Ảnh 8-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 9 -->
+        <div class="slide light-slide" id="slide-9">
+            <div class="slide-header">
+                <div class="stage-tracker"><span class="stage-step">BƯỚC 3 & 4: THỰC THI</span> MỤC TIÊU SMART & LỘ TRÌNH 3W (MỤC 03)</div>
+                <h2 class="slide-title">5. Tầm Nhìn Chiến Lược 5 Năm — Bản Thân</h2>
+            </div>
+
+            <div class="smart-single-layout">
+                <div class="smart-card-full step-item" style="border-top-color: #F59E0B;">
+                    <div class="col-header-box" style="border-bottom:2px solid #E2E8F0; padding-bottom:8px;">
+                        <h3 style="color: #D97706; font-size: 22px;"><i class="fas fa-user-shield"></i> 03. BẢN THÂN</h3>
+                    </div>
+
+                    <div class="col-field-block" style="border-left-color: #F59E0B;">
+                        <div class="col-field-label" style="color: #D97706;"><i class="fas fa-bullseye"></i> ĐÍCH ĐẾN (MỤC TIÊU SMART):</div>
+                        <div class="col-field-content">
+                            Sở hữu <strong>thể lực bền bỉ</strong>, tinh thần minh mẫn và duy trì trách nhiệm <strong>sẻ chia với cộng đồng</strong>.
+                        </div>
+                    </div>
+
+                    <div class="col-field-block" style="border-left-color: #F59E0B;">
+                        <div class="col-field-label" style="color: #D97706;"><i class="fas fa-tasks"></i> WHAT (Hành Động Cần Làm):</div>
+                        <div class="col-field-content">
+                            ✦ Chạy bộ/tập thể dục 30 - 45 phút mỗi ngày.<br>
+                            ✦ Hoàn thành 1 cuốn sách phát triển kỹ năng mỗi tháng.<br>
+                            ✦ Nuôi heo đất trích quỹ để làm từ thiện hằng năm.
+                        </div>
+                    </div>
+
+                    <div class="col-field-block" style="border-left-color: #F59E0B;">
+                        <div class="col-field-label" style="color: #D97706;"><i class="fas fa-clock"></i> WHEN (Thời Gian):</div>
+                        <div class="col-field-content">
+                            <strong>Mỗi ngày:</strong> Rèn luyện thể lực.<br>
+                            <strong>Cuối tháng/Năm:</strong> Tổng kết sách & từ thiện.
+                        </div>
+                    </div>
+
+                    <div class="col-field-block" style="border-left-color: #F59E0B;">
+                        <div class="col-field-label" style="color: #D97706;"><i class="fas fa-map-marker-alt"></i> WHERE (Địa Điểm):</div>
+                        <div class="col-field-content">
+                            Công viên địa phương, Phòng tập & Các tổ chức từ thiện xã hội.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="random-photo-mosaic step-item">
+                    <div class="photo-frame"><img src="images/slide9_1.png" alt="Ảnh 9-1"></div>
+                    <div class="photo-frame"><img src="images/slide9_2.png" alt="Ảnh 9-2"></div>
+                    <div class="photo-frame"><img src="images/slide9_3.png" alt="Ảnh 9-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 10 -->
+        <div class="slide light-slide" id="slide-10">
+            <div class="slide-header">
+                <div class="stage-tracker"><span class="stage-step">BƯỚC 5: SỨC BỀN</span> SỨC BỀN LÒNG ĐẤT: KỶ LUẬT 24H HẰNG NGÀY</div>
+                <h2 class="slide-title">6. Thời Gian Biểu Cố Định (Lộ Trình Tối Ưu Hóa)</h2>
+            </div>
+            <div class="merged-container">
+                <div class="table-wrap step-item" style="height: 100%;">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 220px;">Khung Giờ</th>
+                                <th>Hoạt Động Kỷ Luật</th>
+                                <th>Giá Trị Mang Lại</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong style="color:#0284C7; font-size:15px;">05:30 – 06:15</strong></td>
+                                <td>Thức dậy & Tập thể thao (30 - 45 phút)</td>
+                                <td>Kích hoạt năng lượng ngày mới bền bỉ.</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color:#0284C7; font-size:15px;">07:30 – 11:30</strong></td>
+                                <td>Học tập / Làm việc chuyên môn tại trường</td>
+                                <td>Tập trung 100% công suất, hoàn thành bài tập đúng hạn.</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color:#0284C7; font-size:15px;">13:30 – 17:00</strong></td>
+                                <td>Thực hành chuyên ngành & Hỗ trợ bãi xe gia đình</td>
+                                <td>Rèn luyện kỹ năng thực tế & Tối ưu quy trình vận hành.</td>
+                            </tr>
+                            <tr class="highlight-row">
+                                <td><strong style="color:#0369A1; font-size:15px;">19:00 – 21:00</strong></td>
+                                <td>Khung Giờ Vàng: Ôn Chuyên Môn & Tiếng Anh</td>
+                                <td>Tích lũy tri thức cốt lõi (Áp dụng phương pháp Pomodoro).</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color:#0284C7; font-size:15px;">21:30 – 22:30</strong></td>
+                                <td>Đánh giá ngày (Journaling) & Lập To-do list ngày mai</td>
+                                <td>Đảm bảo sự kiểm soát bản thân & Giữ vững tính kỷ luật.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 11 -->
+        <div class="slide light-slide" id="slide-11">
+            <div class="slide-header">
+                <div class="stage-tracker"><span class="stage-step">BƯỚC 6: TỎA SÁNG</span> NGỌN LỬA PHẢN CHIẾU ÁNH SÁNG</div>
+                <h2 class="slide-title">7. Nguồn Động Lực Phát Triển Bền Vững</h2>
+            </div>
+            
+            <div class="motivation-grid-2col">
+                <div class="motivation-card-with-photo step-item" style="border-top-color: #0284C7;">
+                    <h3><i class="fas fa-user-check"></i> 01. TỰ CHỦ BẢN THÂN</h3>
+                    <div class="motivation-photo-box">
+                        <img src="images/slide11_1.png" alt="Ảnh bản thân">
+                    </div>
+                </div>
+
+                <div class="motivation-card-with-photo step-item" style="border-top-color: #10B981;">
+                    <h3 style="color: #059669;"><i class="fas fa-home"></i> 02. TRÁCH NHIỆM GIA ĐÌNH</h3>
+                    <div class="motivation-photo-box">
+                        <img src="images/slide11_2.png" alt="Ảnh gia đình">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 12 -->
+        <div class="slide dark-slide" id="slide-12">
+            <div class="glow-orb-center"></div>
+            <div class="thankyou-centered-layout step-item">
+                <div class="thankyou-card">
+                    <h1 class="cover-main-title" style="font-size: 52px; margin: 0;">CẢM ƠN HỘI ĐỒNG</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-btn-wrap">
+            <button class="nav-btn" onclick="prevStep()"><i class="fas fa-chevron-left"></i></button>
+            <button class="nav-btn" onclick="nextStep()"><i class="fas fa-chevron-right"></i></button>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const logoContainer = document.getElementById('fixed-logo');
+        let subStepSlide5 = 1;
+
+        function syncAfterPhotos(stepNum) {
+            subStepSlide5 = stepNum;
+            for(let i=1; i<=3; i++) {
+                const txt = document.getElementById(`text-after-${i}`);
+                const imgGroup = document.getElementById(`photos-after-${i}`);
+                if(txt) txt.classList.remove('highlight-item');
+                if(imgGroup) imgGroup.classList.remove('active-photos');
+            }
+            const activeTxt = document.getElementById(`text-after-${stepNum}`);
+            const activeImg = document.getElementById(`photos-after-${stepNum}`);
+            if(activeTxt) activeTxt.classList.add('highlight-item');
+            if(activeImg) activeImg.classList.add('active-photos');
+        }
+
+        function updateSliderUI() {
+            slides.forEach((slide, index) => slide.classList.toggle('active', index === currentSlideIndex));
+            
+            if (logoContainer) {
+                if (currentSlideIndex >= 5 && currentSlideIndex <= 10) {
+                    logoContainer.classList.remove('dark-theme');
+                    logoContainer.classList.add('light-theme');
+                } else {
+                    logoContainer.classList.remove('light-theme');
+                    logoContainer.classList.add('dark-theme');
+                }
+            }
+
+            if(currentSlideIndex === 4) syncAfterPhotos(subStepSlide5);
+        }
+
+        function nextStep() {
+            if (currentSlideIndex === 4 && subStepSlide5 < 3) {
+                subStepSlide5++;
+                syncAfterPhotos(subStepSlide5);
+                return;
+            }
+
+            const activeSlide = slides[currentSlideIndex];
+            const unrevealed = activeSlide.querySelectorAll('.step-item:not(.revealed)');
+            
+            if (unrevealed.length > 0) {
+                unrevealed[0].classList.add('revealed');
+            } else if (currentSlideIndex < slides.length - 1) {
+                currentSlideIndex++;
+                subStepSlide5 = 1;
+                updateSliderUI();
+                slides[currentSlideIndex].querySelectorAll('.step-item').forEach(s => s.classList.remove('revealed'));
+                const first = slides[currentSlideIndex].querySelectorAll('.step-item')[0];
+                if(first) first.classList.add('revealed');
+            }
+        }
+
+        function prevStep() {
+            if (currentSlideIndex === 4 && subStepSlide5 > 1) {
+                subStepSlide5--;
+                syncAfterPhotos(subStepSlide5);
+                return;
+            }
+
+            const activeSlide = slides[currentSlideIndex];
+            const revealed = activeSlide.querySelectorAll('.step-item.revealed');
+            
+            if (revealed.length > 1) {
+                revealed[revealed.length - 1].classList.remove('revealed');
+            } else if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                subStepSlide5 = 3;
+                updateSliderUI();
+                slides[currentSlideIndex].querySelectorAll('.step-item').forEach(s => s.classList.add('revealed'));
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextStep();
+            if (e.key === 'ArrowLeft') prevStep();
+        });
+
+        window.onload = function() {
+            updateSliderUI();
+            const first = slides[0].querySelectorAll('.step-item')[0];
+            if(first) first.classList.add('revealed');
+        };
+    </script>
+</body>
+</html>
